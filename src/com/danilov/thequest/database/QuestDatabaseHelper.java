@@ -1,5 +1,6 @@
 package com.danilov.thequest.database;
 
+import com.danilov.thequest.core.quest.Quest;
 import com.danilov.thequest.util.Utils;
 
 import android.content.Context;
@@ -60,10 +61,12 @@ public class QuestDatabaseHelper extends SQLiteOpenHelper {
 	public QuestDatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		SQLiteDatabase dataBase = getReadableDatabase();
-		if (Utils.isTableExistInDB(dataBase, QUEST_TABLE_NAME)) {
-			
+		if (!Utils.isTableExistInDB(dataBase, QUEST_TABLE_NAME)) {
+			createQuestTable(dataBase);
 		}
-		Utils.isTableExistInDB(dataBase, QUEST_STAGE_TABLE_NAME);
+		if (!Utils.isTableExistInDB(dataBase, QUEST_STAGE_TABLE_NAME)) {
+			createQuestStageTable(dataBase);
+		}
 		dataBase.close();
 	}
 	
@@ -86,7 +89,15 @@ public class QuestDatabaseHelper extends SQLiteOpenHelper {
 	
 	private void createQuestStageTable(final SQLiteDatabase dataBase) {
 		Utils.Log("on createQuestStageTable");
-		String[] colTypes = {};
+		String[] colTypes = {
+				"integer primary key autoincrement",
+				"integer",
+				"integer",
+				"text",
+				"text",
+				"integer",
+				"integer"
+		};
 		createTable(dataBase, QUEST_STAGE_TABLE_NAME, STAGE_TABLE_COLNAMES, colTypes);
 	}
 	
@@ -106,16 +117,30 @@ public class QuestDatabaseHelper extends SQLiteOpenHelper {
 		sqlExpression += ");";
 		dataBase.execSQL(sqlExpression);
 	}
+	
+	private void dropTable(final SQLiteDatabase dataBase, final String dataBaseName) {
+		dataBase.execSQL("DROP TABLE IF EXISTS " + dataBaseName);
+	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		// TODO Auto-generated method stub
-		
+		SQLiteDatabase dataBase = getReadableDatabase();
+		if (!Utils.isTableExistInDB(dataBase, QUEST_TABLE_NAME)) {
+			createQuestTable(dataBase);
+		}
+		if (!Utils.isTableExistInDB(dataBase, QUEST_STAGE_TABLE_NAME)) {
+			createQuestStageTable(dataBase);
+		}
+		dataBase.close();
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	public void addQuest(final Quest quest) {
 		
 	}
 
