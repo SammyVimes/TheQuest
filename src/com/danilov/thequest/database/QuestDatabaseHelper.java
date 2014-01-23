@@ -1,5 +1,7 @@
 package com.danilov.thequest.database;
 
+import com.danilov.thequest.util.Utils;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -36,11 +38,73 @@ public class QuestDatabaseHelper extends SQLiteOpenHelper {
 		QUEST_COLNAME_EXPIRATION_DATE
 	};
 	
+
+	private static final String STAGE_COLNAME_RECORD_ID = "RECORD_ID";
+	private static final String STAGE_COLNAME_QUEST_ID = "QUEST_ID";
+	private static final String STAGE_COLNAME_STAGE_NUMBER = "STAGE_NUMBER";
+	private static final String STAGE_COLNAME_TYPE = "TYPE";
+	private static final String STAGE_COLNAME_DESCRIPTION = "DESCRIPTION";
+	private static final String STAGE_COLNAME_START_DATE = "START_DATE";
+	private static final String STAGE_COLNAME_EXPIRATION_DATE = "EXPIRATION_DATE";
 	
-	
+	private static final String[] STAGE_TABLE_COLNAMES = {
+		STAGE_COLNAME_RECORD_ID,
+		STAGE_COLNAME_QUEST_ID,
+		STAGE_COLNAME_STAGE_NUMBER,
+		STAGE_COLNAME_TYPE,
+		STAGE_COLNAME_DESCRIPTION,
+		STAGE_COLNAME_START_DATE,
+		STAGE_COLNAME_EXPIRATION_DATE
+	};
 
 	public QuestDatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
+		SQLiteDatabase dataBase = getReadableDatabase();
+		if (Utils.isTableExistInDB(dataBase, QUEST_TABLE_NAME)) {
+			
+		}
+		Utils.isTableExistInDB(dataBase, QUEST_STAGE_TABLE_NAME);
+		dataBase.close();
+	}
+	
+	private void createQuestTable(final SQLiteDatabase dataBase) {
+		Utils.Log("on createQuestTable");
+		String[] colTypes = {
+				"integer primary key autoincrement",
+				"integer",
+				"integer",
+				"integer",
+				"integer",
+				"integer",
+				"text",
+				"text",
+				"integer",
+				"integer"
+		};
+		createTable(dataBase, QUEST_TABLE_NAME, QUEST_TABLE_COLNAMES, colTypes);
+	}
+	
+	private void createQuestStageTable(final SQLiteDatabase dataBase) {
+		Utils.Log("on createQuestStageTable");
+		String[] colTypes = {};
+		createTable(dataBase, QUEST_STAGE_TABLE_NAME, STAGE_TABLE_COLNAMES, colTypes);
+	}
+	
+	private void createTable(final SQLiteDatabase dataBase, 
+							 final String tableName,
+							 final String[] colNames, 
+							 final String[] colTypes) {
+		String sqlExpression = "create table" + tableName + " (";
+		for (int i = 0; i < colNames.length; i++) {
+			String colName = colNames[i];
+			String colType = colTypes[i];
+			sqlExpression += colName + colType;
+			if (i < colNames.length - 1) {
+				sqlExpression += ",";
+			}
+		}
+		sqlExpression += ");";
+		dataBase.execSQL(sqlExpression);
 	}
 
 	@Override
