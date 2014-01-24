@@ -165,7 +165,16 @@ public class QuestDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	private void insertStages(final SQLiteDatabase dataBase, final List<QuestStage> questStages) {
-		
+		for (QuestStage stage : questStages) {
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(STAGE_COLNAME_QUEST_ID, stage.getQuestId());
+			contentValues.put(STAGE_COLNAME_STAGE_NUMBER, stage.getStageNumber());
+			contentValues.put(STAGE_COLNAME_TYPE, stage.getQuestStageType().toString());
+			contentValues.put(STAGE_COLNAME_DESCRIPTION, stage.getDescription());
+			contentValues.put(STAGE_COLNAME_START_DATE, stage.getStartDate().getTime());
+			contentValues.put(STAGE_COLNAME_EXPIRATION_DATE, stage.getExpirationDate().getTime());
+			dataBase.insert(QUEST_STAGE_TABLE_NAME, null, contentValues);
+		}
 	}
 
 }
